@@ -66,6 +66,17 @@ H3_style = {
     'font-size': '20px',
     'color': '#bed2ff',
     'font-weight': 'bold',
+    # 'float': 'left',
+    # 'text-align': 'center',
+}
+
+label_style = {
+    'font-family': 'Optima, sans-serif',
+    'font-size': '20px',
+    'color': '#bed2ff',
+    'font-weight': 'bold',
+    'float': 'bottom',
+    'margin-left': '1em',
     # 'text-align': 'center',
 }
 
@@ -189,7 +200,8 @@ educational_Level_vis = html.Div(
 
 from interactive_plots import preprocess, interactive_plots_preprocess, price_trendency_plot, count_plot
 import holoviews as hv
-hv.extension('bokeh')
+hv.extension('bokeh', 'matplotlib')
+import hvplot.pandas
 from bokeh.plotting import show
 from holoviews.plotting.plotly.dash import to_dash
 
@@ -197,6 +209,13 @@ df = pd.read_csv('data/processed2.csv', header=0, index_col=0)
 df, edata = interactive_plots_preprocess(df)
 def dropdown_select(k):
     components = to_dash(app, [price_trendency_plot(edata, k)])
+    plot = html.Div(components.children)
+    return plot
+
+# count_plot(df, "manufacturer")
+
+def dropdown_count(k):
+    components = to_dash(app, [count_plot(df, k)])
     plot = html.Div(components.children)
     return plot
 
@@ -422,44 +441,44 @@ layout_tab_2 = html.Div(children =[
 layout_tab_new = html.Div(children =[
     html.Div(children =[
     html.Div(children =[
-    html.Label('Enter number of employees (quarterly indicator): '),
+    html.Label('Enter number of employees (quarterly indicator): ', style=label_style),
     dcc.Input(id='nremployed', placeholder='# employees', type='number')],
               style={'float': 'center', 'display': 'flex', 'justify-content': 'center'}),
               
     html.Div(children =[
-    html.Label('Enter the outcome of the previous marketing campaign: '),
+    html.Label('Enter the outcome of the previous marketing campaign: ', style=label_style),
     dcc.Input(id='poutcome_success', placeholder='prev.', type='number', min = 0, max = 1, step = 1)],
-              style={'float': 'center', 'display': 'flex', 'justify-content': 'center'}),
+              style={'float': 'bottom', 'display': 'flex', 'justify-content': 'center'}),
               
     html.Div(children =[
-    html.Label('Enter the employment variation rate - quarterly indicator: '),
+    html.Label('Enter the employment variation rate - quarterly indicator: ', style=label_style),
     dcc.Input(id='emp', placeholder='emp. variation rate', type='number')],
-              style={'float': 'center', 'display': 'flex', 'justify-content': 'center'}),
+              style={'float': 'bottom', 'display': 'flex', 'justify-content': 'center'}),
               
     html.Div(children =[
-    html.Label('Enter the number of days since the last call (999 if NA): '),
+    html.Label('Enter the number of days since the last call (999 if NA): ', style=label_style),
     dcc.Input(id='pdays', placeholder='# days since last call', type='number')],
-              style={'float': 'center', 'display': 'flex', 'justify-content': 'center'}),
+              style={'float': 'bottom', 'display': 'flex', 'justify-content': 'center'}),
               
     html.Div(children =[
-    html.Label('Enter the consumer confidence index (monthly indicator): '),
+    html.Label('Enter the consumer confidence index (monthly indicator): ', style=label_style),
     dcc.Input(id='consconfidx', placeholder='consumer conf. index', type='number')],
-              style={'float': 'center', 'display': 'flex', 'justify-content': 'center'}),
+              style={'float': 'bottom', 'display': 'flex', 'justify-content': 'center'}),
               
     html.Div(children =[
-    html.Label('Enter the euribor 3 month rate (daily indicator): '),
+    html.Label('Enter the euribor 3 month rate (daily indicator): ', style=label_style),
     dcc.Input(id='euribor3m', placeholder='euribor rate', type='number')],
-              style={'float': 'center', 'display': 'flex', 'justify-content': 'center'}),
+              style={'float': 'bottom', 'display': 'flex', 'justify-content': 'center'}),
               
     html.Div(children =[
-    html.Label('Enter the no income indicator, 1 if the customer job retired, student or unemployed: '),
+    html.Label('Enter the no income indicator, 1 if the customer job retired, student or unemployed: ', style=label_style),
     dcc.Input(id='job_transformed_no_income', placeholder='inc', type='number', min = 0, max = 1, step = 1)],
-              style={'float': 'center', 'display': 'flex', 'justify-content': 'center'}),
+              style={'float': 'bottom', 'display': 'flex', 'justify-content': 'center'}),
     
     ]),
    
     html.Div(children=[
-        html.H1(children='Probability of Success: '),
+        html.H1(children='Probability of Success: ', style=H3_style),
         html.Div(id='pred-output')
     ], style={'textAlign': 'center', 'justify-content': 'center'}),
 ])
@@ -520,10 +539,10 @@ dd_1 = html.Div(children =[
 
 dropdown_plot = html.Div(children =[
     dcc.Dropdown(['year', 'state', 'manufacturer', 'model', 'condition', 'odometer', 'fuel', 'size', 'type', 'cylinders', 'drive', 'transmission', 'paint_color', 'price_range','year_range', 'odometer_range'], 
-    id='demo-dropdown', placeholder='Select an attribute...', style={'width': '50%'}),
+    id='demo-dropdown', placeholder='Select an attribute...', style={'width': '80%'}),
     html.Div(children =[
-    html.Div(id='dd-output-container',style={'float': 'right', 'display': 'flex', 'justify-content': 'center'})]),],
-    style={'height': 380,'width': '280', 'float': 'bottom'}) # bottom of H3
+    html.Div(id='dd-output-container',style={'float': 'left', 'display': 'flex', 'justify-content': 'center'})]),],
+    style={'height': 380,'width': '280', 'float': 'left', 'justify-content': 'center', 'margin-right':'2em'}) # bottom of H3 / no flex
 
 @app.callback(
     Output('dd-output-container', 'children'),
@@ -533,6 +552,22 @@ def update_output(value):
     if not value:
         return dropdown_select("year")
     return dropdown_select(value)
+
+# dd_count = html.Div(children =[
+#     dcc.Dropdown(['year', 'state', 'manufacturer', 'model', 'condition', 'odometer', 'fuel', 'size', 'type', 'cylinders', 'drive', 'transmission', 'paint_color', 'price_range','year_range', 'odometer_range'], 
+#     id='count-dropdown', placeholder='Select an attribute...', style={'width': '80%'}),
+#     html.Div(children =[
+#     html.Div(id='count-output-container',style={'float': 'left', 'display': 'flex', 'justify-content': 'center'})]),],
+#     style={'height': 380,'width': '280', 'float': 'left', 'justify-content': 'center', 'margin-right':'2em'})
+
+# @app.callback(
+#     Output('count-output-container', 'children'),
+#     Input('count-dropdown', 'value')
+# )
+# def update_output(value):
+#     if not value:
+#         return dropdown_count("year")
+#     return dropdown_count(value)
 
 marital_status_vis = html.Div(style={'margin-left':'2em', 'margin-right':'2em'},
     children =[
@@ -555,17 +590,35 @@ marital_status_vis = html.Div(style={'margin-left':'2em', 'margin-right':'2em'},
             )],
             style={'height': 380,'width': '280', 'float': 'left', 'display': 'flex', 'justify-content': 'center'}),
 
-            html.H3("PPPPrices:", style=H3_style),
+            html.H3("Price Trendency:", style=H3_style),
             dropdown_plot,
+
+            html.H3("Years:", style=H3_style),
+            html.Div(children =[
+                # html.H3("Prices:", style=H3_style),
+                dcc.Graph(
+                id = "marital status",
+                figure = plot_pie('year_range')
+            )],
+            style={'height': 380,'width': '280', 'float': 'bottom', 'display': 'flex', 'justify-content': 'center'}),
 
             html.H3("Next...:", style=H3_style),
             html.Div(children =[
-                # html.H3("States Overview:", style=H3_style),
+                # html.H3("Prices:", style=H3_style),
                 dcc.Graph(
-                id = "marital prob",
-                figure = state_average()
+                id = "marital status",
+                figure = plot_pie('year_range')
             )],
-            style={'height': 380,'width': '280', 'float': 'left', 'display': 'flex', 'justify-content': 'center'}),
+            style={'height': 380,'width': '280', 'float': 'left', 'display': 'flex', 'justify-content': 'center', 'margin-right':'2em'}),
+
+            html.H3("Next...:", style=H3_style),
+            html.Div(children =[
+                # html.H3("Prices:", style=H3_style),
+                dcc.Graph(
+                id = "marital status",
+                figure = plot_pie('year_range')
+            )],
+            style={'height': 380,'width': '280', 'float': 'bottom', 'display': 'flex', 'justify-content': 'center'}),
 
             ]),
             # dropdown_plot,
