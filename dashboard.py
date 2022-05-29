@@ -17,13 +17,11 @@ from dash_table.Format import Sign
 import joblib
 # from util import dynamic_predict
 import matplotlib.pyplot as plt
-
 # from visualization import analysis  
 # from visualization import plots
 # from data import plot_analysis
 
-
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets = ['assets/style.css'] #https://codepen.io/chriddyp/pen/bWLwgP.css
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets) #external_stylesheets=external_stylesheets
 
 #app.scripts.config.serve_locally = True
@@ -34,39 +32,54 @@ colors = {
     'background': '#111111',
     'text': '#7FDBFF'
 }
-
 tab_style = {
+    'borderTop': '1px solid #292841',
+    'borderBottom': '1px solid #292841',
+    'borderLeft': '1px solid #bcbfc2',
+    'borderRight': '1px solid #bcbfc2',
     'fontWeight': 'bold',
-    'font-size': '24px',
-    'font-family': 'Gill Sans, sans-serif',
-    'color': '#3e35a4'
+    'font-size': '20px',
+    'font-family': 'Optima, sans-serif',
+    'color': '#b8bbbe',
+    'backgroundColor': '#292841',
+    'padding': '8px',
 }
-vis_tab_style = {
-    'borderBottom': '1px solid #d6d6d6',
-    'padding': '12px',
+# vis_tab_style = {
+#     'borderBottom': '1px solid #d6d6d6',
+#     'padding': '12px',
+# }
+tab_selected_style = {
+    'borderTop': '2px solid #bed2ff',
+    'borderBottom': '1px solid #292841',
+    'borderLeft': '1px solid #bcbfc2',
+    'borderRight': '1px solid #bcbfc2',
+    'backgroundColor': '#292841',
+    'color': 'white',
+    'font-size': '22px',
+    'font-family': 'Optima, sans-serif',
+    'font-weight': 'bold',
+    'padding': '8px',
 }
 
-tab_selected_style = {
-    'borderTop': '1px solid #d6d6d6',
-    'borderBottom': '1px solid #d6d6d6',
-    'backgroundColor': '#119DFF',
-    'color': 'white',
+H3_style = {
+    'font-family': 'Optima, sans-serif',
+    'font-size': '20px',
+    'color': '#bed2ff',
     'font-weight': 'bold',
-    'padding': '14px'
+    # 'text-align': 'center',
 }
+
 app.layout = html.Div(
-    # style={
-    #     'background-image': 'url("assets/car-sales.jpeg")',
-    #     'background-repeat': 'no-repeat',
-    #     'background-position': 'center',
-    #     'background-size': 'cover'
-    #     },
     children = [
-    html.H1("Used Car Sales Recommendation Dashboard", style={'text-align': 'center', 'font-family': 'Gill Sans, sans-serif',
-                                                              'font-weight': 'bold', 'color': '#3e35a4', 'font-size': '48px' }),
-    dcc.Tabs(id="tabs", value='tab-1', children=[
-        dcc.Tab(label='Cars Info & Trends Dashboard', value='tab-1', style=tab_style,selected_style=tab_style),
-        dcc.Tab(label='Cars Recommendation Dashboard', value='tab-new', style=tab_style,selected_style=tab_style),
+    html.H1("Used Car Sales Recommendation Dashboard", style={'text-align': 'center', 'font-family': 'Optima, sans-serif',
+                                                              'padding-top': '0.4em', 'padding-bottom': '0.4em',
+                                                              'margin-top': '0em', 'margin-bottom': '0em',
+                                                              'font-weight': 'bold', 'color': '#bed2ff', 'font-size': '40px',
+                                                              'backgroundColor':'#292841'}), #bed2ff, 2ddfb3
+    dcc.Tabs(id="tabs", value='tab-1', style={'margin-top': '0em', 'margin-bottom': '0em'},
+        children=[
+        dcc.Tab(label='Car Sales Information & Trends', value='tab-1', style=tab_style, selected_style=tab_selected_style),
+        dcc.Tab(label='Cars Recommendation Dashboard', value='tab-new', style=tab_style, selected_style=tab_selected_style),
     ]),
     html.Div(id='tabs-content')
 ]) # style={'backgroundColor':'#cbd4ff'}
@@ -153,26 +166,7 @@ def state_average():
 #***************************** DropDown 
 
 
-marital_status_vis = html.Div(style={'backgroundColor':'#cbd4ff'},
-    children =[
-            html.Div([
-            html.Div(children =[
-                dcc.Graph(
-                id = "marital status",
-                figure = plot_pie('price_range')
-            ) ],
-            style={'height': 400,'width': '300', 'float': 'left', 'display': 'flex', 'justify-content': 'center' }),
-
-            # html.Div(children =[
-            #     dcc.Graph(
-            #     id = "marital prob",
-            #     figure = marital_status_probab()
-            # )],
-            # style={'height': 400,'width': '400', 'float': 'left', 'display': 'flex', 'justify-content': 'center'})
-            ]),
-
-        ])
-educational_Level_vis = html.Div(style={'backgroundColor':'#cbd4ff'},
+educational_Level_vis = html.Div(
     children =[
             html.Div([
             html.Div(children =[
@@ -182,12 +176,12 @@ educational_Level_vis = html.Div(style={'backgroundColor':'#cbd4ff'},
             ) ],
             style={'height': 400,'width': '300', 'float': 'left', 'display': 'flex', 'justify-content': 'center' }),
 
-            # html.Div(children =[
-            #     dcc.Graph(
-            #     id = "marital prob",
-            #     figure = education_level_prob()
-            # )],
-            # style={'height':400,'width': '400', 'float': 'left', 'display': 'flex', 'justify-content': 'center'})
+            html.Div(children =[
+                dcc.Graph(
+                id = "marital prob",
+                figure = plot_pie('price_range')
+            )],
+            style={'height':400,'width': '400', 'float': 'left', 'display': 'flex', 'justify-content': 'center'})
             ]),
 
 ])
@@ -203,9 +197,7 @@ df = pd.read_csv('data/processed2.csv', header=0, index_col=0)
 df, edata = interactive_plots_preprocess(df)
 def dropdown_select(k):
     components = to_dash(app, [price_trendency_plot(edata, k)])
-    plot = html.Div(children =[
-        html.Div(components.children,
-        style={'height': 400,'width': '300', 'float': 'left', 'display': 'flex', 'justify-content': 'center'})])
+    plot = html.Div(components.children)
     return plot
 
 # income_vis1 = html.Div(children =[
@@ -526,13 +518,12 @@ dd_1 = html.Div(children =[
 
         ])
 
-dropdown_plot = html.Div(children=[
-    html.Div(children =[
+dropdown_plot = html.Div(children =[
     dcc.Dropdown(['year', 'state', 'manufacturer', 'model', 'condition', 'odometer', 'fuel', 'size', 'type', 'cylinders', 'drive', 'transmission', 'paint_color', 'price_range','year_range', 'odometer_range'], 
-    id='demo-dropdown', placeholder='Select an attribute...', style={'width': '60%'}),
-    html.Div(id='dd-output-container')],
-    )
-])
+    id='demo-dropdown', placeholder='Select an attribute...', style={'width': '50%'}),
+    html.Div(children =[
+    html.Div(id='dd-output-container',style={'float': 'right', 'display': 'flex', 'justify-content': 'center'})]),],
+    style={'height': 380,'width': '280', 'float': 'bottom'}) # bottom of H3
 
 @app.callback(
     Output('dd-output-container', 'children'),
@@ -543,16 +534,50 @@ def update_output(value):
         return dropdown_select("year")
     return dropdown_select(value)
 
+marital_status_vis = html.Div(style={'margin-left':'2em', 'margin-right':'2em'},
+    children =[
+            html.Div([
+            html.H3("Prices:", style=H3_style),
+            html.Div(children =[
+                # html.H3("Prices:", style=H3_style),
+                dcc.Graph(
+                id = "marital status",
+                figure = plot_pie('price_range')
+            )],
+            style={'height': 380,'width': '280', 'float': 'left', 'display': 'flex', 'justify-content': 'center', 'margin-right':'2em'}),
 
+            html.H3("States Overview:", style=H3_style),
+            html.Div(children =[
+                # html.H3("States Overview:", style=H3_style),
+                dcc.Graph(
+                id = "marital prob",
+                figure = state_average()
+            )],
+            style={'height': 380,'width': '280', 'float': 'left', 'display': 'flex', 'justify-content': 'center'}),
+
+            html.H3("PPPPrices:", style=H3_style),
+            dropdown_plot,
+
+            html.H3("Next...:", style=H3_style),
+            html.Div(children =[
+                # html.H3("States Overview:", style=H3_style),
+                dcc.Graph(
+                id = "marital prob",
+                figure = state_average()
+            )],
+            style={'height': 380,'width': '280', 'float': 'left', 'display': 'flex', 'justify-content': 'center'}),
+
+            ]),
+            # dropdown_plot,
+        ])
+        
 layout_whole = html.Div(children = [marital_status_vis, educational_Level_vis, dropdown_plot, contact_vis])
 
 @app.callback(Output('tabs-content', 'children'),
               [Input('tabs', 'value')])
 def render_content(tab):
     if tab == 'tab-1':
-        return layout_whole
-    elif tab == 'tab-2':
-        return layout_tab_2
+        return marital_status_vis #layout_whole
     elif tab == "tab-new":
         return layout_tab_new
 
